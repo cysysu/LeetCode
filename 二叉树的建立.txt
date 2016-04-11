@@ -1,0 +1,24 @@
+typedef struct node
+{
+	struct node *leftChild;
+	struct node *rightChild;
+	node():data(0),leftChild(NULL),rightChild(NULL){};
+	char data;
+}BiTreeNode, *BiTree;
+
+ifstream fin("c:\\users\\dell\\desktop\\tree.txt");
+
+
+void createBiTree(BiTree &T){
+	char c;
+	fin >> c;
+	if ('#' == c)
+		T = NULL;
+	else
+	{
+		T = new BiTreeNode;
+		T->data = c;
+		createBiTree(T->leftChild);
+		createBiTree(T->rightChild);
+	}
+}
