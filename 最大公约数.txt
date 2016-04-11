@@ -1,0 +1,27 @@
+最大公约数
+递归求法：
+int fuc(int m,int n)
+{
+    if(m%n == 0)
+    {
+        return n;
+    }
+    else
+    {
+    return fuc(n,m%n)
+    }
+}
+
+非递归求法：
+int main(){
+	int a = 2102, b = 2012;
+	int temp;
+	while (b!=0){
+		temp = a%b;
+		a = b;
+		b = temp;
+	}
+	cout << "最大公约数是：" << a << endl;
+	return 0;
+}
+
