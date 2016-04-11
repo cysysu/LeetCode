@@ -1,0 +1,130 @@
+#include<stdlib.h>
+#include<iostream>
+#include<fstream>
+#include<stdio.h>
+#include<time.h>
+#include<memory.h>
+#include<math.h>
+#include<windows.h>
+#include<math.h>
+#include<conio.h>
+#include<iomanip>
+#include<string>
+#include<vector>
+#include<utility>
+#include<stack>
+using namespace std;
+
+
+typedef struct node
+{
+	struct node *leftChild;
+	struct node *rightChild;
+	node():data(0),leftChild(NULL),rightChild(NULL){};
+	char data;
+}BiTreeNode, *BiTree;
+
+ifstream fin("c:\\users\\dell\\desktop\\tree.txt");
+
+
+void createBiTree(BiTree &T){
+	char c;
+	fin >> c;
+	if ('#' == c)
+		T = NULL;
+	else
+	{
+		T = new BiTreeNode;
+		T->data = c;
+		createBiTree(T->leftChild);
+		createBiTree(T->rightChild);
+	}
+}
+
+
+//二叉树的非递归中序遍历
+vector<char> inorder_visit(BiTree head){ 
+	vector<char>data; stack<BiTree>node;
+	BiTree temp=NULL;
+	if (head == NULL)return data;
+	while (head!=NULL||node.empty()!=true){
+		if (head != NULL){
+			node.push(head);
+			//data.push_back(head->data);/*先序输出*/
+			head = head->leftChild;
+		}
+		else{
+			temp = node.top();//取出栈顶元素
+			node.pop();//删除栈顶元素
+			data.push_back(temp->data);/*中序输出*/
+			head = temp->rightChild;
+		}
+	}
+	return data;
+}
+/*算法综述：
+1.在中序遍历中，首先一直沿根往下找，并用栈记录访问过的根，一旦进入else语句，则说明栈的最顶结点
+的左子树为空，则输出该结点，然后访问该结点的右子树，如果右子树为空，则每返回上一层的结点都是跟结点
+，所以直接输出。
+2.对于先序遍历来说，唯一的差别就是输出根结点的顺序，在入栈的过程中，以最左边结点为根的数全部被记录，
+栈里的元素可以将整颗树连系起来。
+*/
+
+
+//二叉树的非递归后续遍历
+vector<char> postorder_visit(BiTree head){
+	vector<char>data; stack<pair<BiTree,bool> >node;//bool表示根结点的右孩子是否被访问
+	int count = 0;
+	if (head == NULL)return data;
+	while (head != NULL || node.empty() != true){
+		if (head != NULL){ //当根的左结点为空时，
+			node.push(make_pair(head,false));
+			head = head->leftChild;
+		}
+		else{
+			while (node.empty() == false&&(node.top().second != false || node.top().first->rightChild == NULL)){
+				//一旦根结点的右子树为空，或根结点的标志位为true(标志位为true说明根的右子树已被访问)
+				data.push_back(node.top().first->data);
+				node.pop();
+			}
+			if (node.empty() != true){//当最后一个元素出栈之后就不能top()操作
+				head = node.top().first->rightChild;
+				node.top().second = true;
+			}
+		}
+	}
+	return data;
+}
+/*算法综述:
+
+1.在后续遍历中，根结点一定要在左右子树输出后再输出，所以我们用bool型变量表示根的右结点是否被访问。如果
+
+根的右结点已经被访问过或无右子树，则就可以输出该根结点。
+
+2.算法总体思想可表述为：
+
+(1)一直沿根的左字数遍历，一旦遇到根的左子树为空时，就判断该根结点的右子树是否被访问过或者右子树是否为空
+
+(2)每个结点都会经历两次判断，第一次判断时(因为即使这个结点没有右结点，它的右结点访问标志位现在为false)先看
+
+这个结点的右孩子是否为空，一旦为空则可立马输出该结点，并且出栈，然后继续判断(while是为了从子树一路返回的情况)
+*/
+
+
+
+区别：
+在中序和先序中，一旦结点的左子树为空，则可以将元素出栈
+
+但是在后序遍历中，根结点的右子树还没访问，即不能出栈(或者是出栈之前先保存然后在出栈)。
+
+int main()
+{
+	BiTree T;
+	createBiTree(T);
+
+	vector<char>inorder,postorder;
+	inorder = inorder_visit(T);
+	postorder = postorder_visit(T);
+	return 0;
+}
+
