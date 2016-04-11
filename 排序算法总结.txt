@@ -1,0 +1,311 @@
+#include<stdlib.h>
+#include<iostream>
+#include<fstream>
+#include<stdio.h>
+#include<time.h>
+#include<memory.h>
+#include<math.h>
+#include<windows.h>
+#include<math.h>
+#include<conio.h>
+#include<iomanip>
+#include<string>
+#include<vector>
+using namespace std;
+
+
+class solution{ //排序类
+public:
+	/***********************************insert_sort(插入排序)*****************************/
+	/*straight_insert_sort(直接插入排序)*/
+	vector<int> straight_insert_sort(vector<int>num){
+		int size = num.size();
+		int temp;
+		for (int i = 1; i < size;i++){
+			if (num[i]<num[i-1]){ //当前一个数比后一个数大时
+				temp = num[i];
+				while (i>0&&num[i-1]>temp){ //临界条件一定不能写成是i>=0
+					num[i] = num[i-1];
+					i--;
+				}
+				num[i] = temp;
+			}
+		}
+		return num;
+	}
+	/*算法思想综述：
+	1.temp存放当前要插入的元素;
+	2.在当前插入元素之前的所有元素都认为是已排序好的;
+	3.如果当前元素比前面的元素小，则开始移动元素
+	*/
+
+	/*shell_sort(希尔排序)*/
+	vector<int> shell_sort(vector<int>num){
+		int size = num.size();
+		int step = size / 2,temp;
+		while (step>=1){
+			for (int i = 0; i < step; i++){ //在step之前的每个元素被看成是
+				//每个段的开始
+				for (int j = i + step; j < size;j=j+step){//同段内的元素偏移
+					if (num[j]<num[j-step]){
+						temp = num[j];
+						while (j>i&&num[j - step]>temp){ //内部每段使用直接插入排序
+							num[j] = num[j - step];
+							j = j - step;
+						}
+						num[j] = temp;
+					}
+				}
+			}
+			step = step / 2;
+		}
+		return num;
+	}
+	/*算法综述：
+	1.j>i要放在num[j - step]>temp的前面，否则会出现容器下标越界
+	2.在取增量的时候有可能在后面的元素会被划分到第1组，而前面相同
+	的元素却被划分到第2组，如下所示：
+	例子 3   5  10  8  7  2  8  1  20  6
+	d=2 分成2组  （3  10  7  8  20） 和（5  8  2  1  6） 第一组的8在第二组的后面
+	*/
+
+
+	/**************************select_sort(选择排序)*************************************/
+	/*(simple_select_sort)简单选择排序，每一趟可以确定两个元素*/
+	vector<int> simple_select_sort(vector<int>num){ //每次找到两个元素的排位
+		int n = num.size();
+		int i, j, min, max, tmp;
+		for (i = 0; i < n / 2; i++) {
+			// 做不超过n/2趟选择排序   
+			min = i; max = i; //分别记录最大和最小关键字记录位置  
+			for (j = i + 1; j < n - i; j++) {
+				if (num[j] > num[max]) {
+					max = j; continue;
+				}
+				if (num[j]< num[min]) {
+					min = j;
+				}
+			}
+			//该交换操作还可分情况讨论以提高效率  
+			if (num[i] != num[min]){ 
+				tmp = num[i]; num[i] = num[min]; num[min] = tmp;
+			}
+			if (num[n - i - 1] != num[max]){
+				tmp = num[n - i - 1]; num[n - i - 1] = num[max]; num[max] = tmp;
+			}
+		}
+		return num;
+	}
+	/*算法综述：
+	1.趟数的确定,一共n个元素，每次确定两个元素，一共需要[n/2]趟
+	2.初始最大最小元素的选取，一定要选择相同的元素，然后和当前剩余
+	元素逐个进行比较。如果最小数和最大数的下标发生变化，则用这两个
+	下标对应的元素分别和对应的头尾元素对换，然后缩小比较范围。
+	*/
+
+	/*(heap sort)堆排序*/
+	vector<int> heap_sort(vector<int> &num,int start, int end){
+		if (end-start==0)return num;
+		//当end-start+1只有一个元素的时候就返回，否则容器就会出现访问越界
+		int size = end - start + 1;
+		int temp;
+		for (int i = size/2-1; i >=0; i--){//建大根堆
+			if (num[i] < num[2 * i + 1]){
+				temp = num[i];
+				num[i] = num[2*i+1];
+				num[2*i+1] = temp;
+			}
+			if (2 * i + 2<size&&num[i]<num[2 * i + 2]){
+				temp = num[i];
+				num[i] = num[2 * i+2];
+				num[2 * i+2] = temp;
+			}
+		}
+		temp = num[start];//交换容器首尾元素,最大数放到最后
+		num[start] = num[end];
+		num[end] = temp;
+		heap_sort(num,start,end-1);
+		return num;
+	}
+	/*算法综述：
+	1.如果有n个结点，首先确定最后一个有孩子结点的下标，无论n是偶数还是基数，最后一个
+	有孩子的结点下标索引为n/2-1;
+	2.建堆的过程是从最后一个非叶子结点开始,将其和其孩子们的进行最大数比较，最大数将放入
+	该结点，如果根结点的下标索引为n,则左孩子的下标为2*n+1，右结点的下标索引为2*n+2.
+	*/
+
+	/**************************swap_sort(交换排序)*************************************/
+	vector<int> bubble_sort(vector<int>num){//从小到大排序
+		int size = num.size();
+		int min = 0, temp = 0;
+		for (int i = 0; i < size - 1; i++){
+			for (int j = i + 1; j < size; j++){
+				if (num[i]>num[j]){
+					temp = num[j];
+					num[j] = num[i];
+					num[i] = temp;
+				}
+			}
+		}
+		return num;
+	}
+	/*算法综述：
+	1.比较和交换同时进行，如果从数组头部开始的话，要将较大的数向下沉；
+	2.如果是数组尾部开始的话，就要将较小的数向上浮。
+	*/
+
+	vector<int> bubble_sort_improvement(vector<int>num){//冒泡排序改进版
+		int size = num.size();
+		int min = 0, temp = 0;
+		for (int i = 0; i < size - 1; i++){
+			min = i;
+			for (int j = i + 1; j < size; j++){
+				if (num[min]>num[j])min = j;//此处不要写成是num[i]>num[j]
+			}
+			if (min != i){
+				temp = num[min];
+				num[min] = num[i];
+				num[i] = temp;
+			}
+		}
+		return num;
+	}
+	/*算法综述：
+	1.改进方法减少了交换的繁琐操作，同样是设置比较区间的第一个数为最小值，然后通过下标
+	比较找到比默认最小值更小的交换。
+	2.从本质上来说和简单选择排序有异曲同工之处。
+	*/
+	
+	//quick_sort(快速排序)
+	vector<int> quick_sort(vector<int> &num, int low, int high){ //快速排序
+		int beg = low, end = high;
+		int key = num[low];//此时假设low后面的元素都比key大
+		if (low >= high)return num;//此句不能少
+		while (low<high){
+			while (num[high] >= key&&high>low)high--;
+			num[low] = num[high];
+			while (num[low] <= key&&high>low)low++;
+			num[high] = num[low];
+		}
+		num[low] = key;
+		quick_sort(num, beg, low - 1);
+		quick_sort(num, low + 1, end);
+		return num;
+	}
+	/* 1、要牢记递归的出口if (low >= high)return num;如果没有，则会出现low比high大，
+	虽然while (low<high)语句不执行，但是会无线执行quick_sort(num, beg, low - 1);和
+	quick_sort(num, low + 1, end);导致系统堆栈溢出。
+	2、先假设num[low]为key,则默认它右边的元素全部都大于
+	key,当high指针停留的时候，说明high所指元素小于key,则将
+	其对应元素放入low中,然后再从低向高搜索大于key的元素，将其
+	放入high中，则low指针所对应空间应该放入比key小的元素，然后
+	又从高向低搜素，知道low=high.
+	*/
+
+	/**************************merger_sort(归并排序)*************************************/
+	//非递归实现
+	vector<int> merge_sort(vector<int> &num){ //非递归实现
+		int size = num.size();
+		if (size <= 1)return num;
+		vector<int>temp;
+		int segement = size;
+		int step = 1;//控制段长
+		int k, h, boun1, boun2;
+		while (segement>1){
+			for (int i = 0; i < size; i = i + step * 2){ //每次向后跳两个段的距离
+				k = i;//第一段的首元素
+				 h = i + step;//第二段的首元素
+				 if (h>size)break;
+				 boun1 = i + step;
+				 boun2 = i + 2 * step>size ? size : i + 2 * step;
+				//归并两个数组
+				while (k<boun1&&h<boun2){
+					if (num[k] < num[h]){
+						temp.push_back(num[k]);
+						k++;
+					}
+					else{
+						temp.push_back(num[h]);
+						h++;
+					}
+				}
+				while (k < boun1){ 
+					temp.push_back(num[k]); 
+					k++;
+				}
+				while (h < boun2){
+					temp.push_back(num[h]);
+					h++;
+				}
+			}
+			while (temp.size() < size){
+				temp.push_back(num[boun2]);
+				boun2++;
+			}
+			segement = segement % 2 == 0 ? segement / 2 : segement / 2 + 1;
+			step = step * 2;
+			num.assign(temp.begin(), temp.end());
+			temp.clear();
+		}
+		return num;
+	}
+	/*算法综述：
+	1. if (h>size)break;k为前一段的开始位置,h为后一段的开始位置，因为k<size所以不会超出界限
+	h为即将合并段的后半段的开始位置，一旦h超出界限，则说明后半段不存在不能进行合并,
+	2.如果存在目前的段数为基数段，而最后一段没有后续段来合并，则直接将这些元素加入到容器中
+	3.step从1开始增长
+	*/
+
+
+	//递归实现
+	void Merge(vector<int>&num, int low, int mid, int high)
+	{//low为第1有序区的第1个元素，i指向第1个元素, mid为第1有序区的最后1个元素  
+		int i = low, j = mid + 1, k = 0;   
+		int *temp = new(nothrow) int[high - low + 1];   
+		if (!temp){//内存分配失败 
+			cout << "ERROR!";
+			return;
+		}
+		while (i <= mid && j <= high)  {//顺序选取两个有序区的较小元素，存储到t数组中
+			if (num[i] <= num[j])//较小的先存入temp中  
+				temp[k++] = num[i++];
+			else
+				temp[k++] = num[j++];
+		}
+		while (i <= mid)//若比较完之后，第一个有序区仍有剩余，则直接复制到t数组中  
+			temp[k++] = num[i++];
+		while (j <= high)//同上  
+			temp[k++] = num[j++];
+		for (i = low, k = 0; i <= high; i++, k++)//将排好序的存回arr中low到high这区间   
+			num[i] = temp[k];
+		delete[]temp;//删除指针，由于指向的是数组，必须用delete []   
+	} 
+	vector<int> MergeSort(vector<int> &num, int low, int high){ //用递归应用二路归并函数实现排序 
+		if (low<high)//（是if，不是while！，且不含等号！否则死循环！）  
+		{//只是切分而已,然后再合并两个分段
+			int mid = (low + high) / 2;
+			MergeSort(num, low, mid);
+			MergeSort(num, mid + 1, high);
+			Merge(num, low, mid, high);
+		}
+		return num;
+	}
+	/*算法综述：
+	1.继续切割条件if (low<high)
+	2.每次合并所动态分配的内存的大小和作用
+	*/
+};
+
+
+int main(){
+	solution s;
+	vector<int>data;
+	int temp;
+	for (int i = 0; i < 20; i++){
+		temp = rand() % 100;
+		data.push_back(temp);
+	}
+	//data=s.shell_sort(data);
+	data = s.simple_select_sort(data);
+	return 0;
+}
