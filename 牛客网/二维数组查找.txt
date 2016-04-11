@@ -1,0 +1,37 @@
+题目描述:二维数组从左到右递增，从上到下递增，查找指定整数在不在数组中。
+
+
+方法一：
+class Solution {
+public:
+	bool Find(vector<vector<int> > array, int target) {
+		int i, j, line, row;
+		int flag;
+		int low, high, mid;
+
+		line = array.size();//数组行数
+		row = array[0].size();//数组列数
+
+		if (line == 0 || row == 0)return 0;
+
+		for (i = 0; i < line; i++){
+			if (array[i][0] <= target&&target <= array[i][row-1]){
+				low = 0;
+				high = row - 1;
+				while (high >= low){
+					mid = (high + low) / 2;
+					if (array[i][mid] == target || array[i][low] == target || array[i][high] == target) return 1;
+					else if (array[i][mid] < target)
+						low = mid + 1;
+					else high = mid - 1;
+				}
+			}
+		}
+		return 0;
+		}
+};
+
+方法二：
+	从右上角开始向左下角搜索，如果大于则向下，小于则向左，从而避免了从左上角向下搜索的缺点：
+
+左上角是矩阵中最小的数，如果大于则可能有两个方向的查找，分别是向上，向下，这样使得程序比较复杂。

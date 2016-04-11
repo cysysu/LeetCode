@@ -1,0 +1,67 @@
+输入n个整数，找出其中最小的K个数。例如输入4,5,1,6,2,7,3,8这8个数字，则最小的4个数字是1,2,3,4,。
+
+代码1（mine）：
+class Solution {
+public:
+	vector<int> GetLeastNumbers_Solution(vector<int> input, int k) {
+		if (input.size() <k)return tmp;
+		else{
+			for (int i = 0; i < k; i++){
+				build_min_heap(input);
+				tmp.push_back(input[0]);
+				input.erase(input.begin());
+			}
+			return tmp;
+		}
+	}
+	
+	void build_min_heap(vector<int>&number){
+		int size = number.size();
+		int parent, tmp;
+		parent = (size - 2) / 2;
+		for (int i = parent; i>=0; i--){
+			if (2 * i + 1 <= size - 1 && number[i] > number[2 * i + 1]){
+				tmp = number[i];
+				number[i] = number[2 * i + 1];
+				number[2 * i + 1] = tmp;
+			}
+			if (2 * i + 2 <= size - 1 && number[i] > number[2 * i + 2]){
+				tmp = number[i];
+				number[i] = number[2 * i + 2];
+				number[2 * i + 2] = tmp;
+			}
+		}
+	}
+	vector<int>tmp;
+};
+
+分析：主要掌握堆排序算法。
+
+代码2:
+class Solution {
+public:
+    vector<int> GetLeastNumbers_Solution(vector<int> input, int k) {
+        vector<int> res;
+        int length = input.size();
+        if(length < k)
+            return res;
+         
+        for(int i=0; i<k; ++i){
+            int minIndex = i;
+            for(int j=i+1; j<length; ++j){
+                if(input[minIndex] > input[j]){
+                    minIndex = j;
+                }
+            }
+            if(minIndex != i){
+                int temp = input[minIndex];
+                input[minIndex] = input[i];
+                input[i] = temp;
+            }
+            res.push_back(input[i]);
+        }
+        return res;
+    }
+};
+
+分析：假设前面k个数最小，然后和该数后面的每一个数逐次比较换出，时间复杂度为k*(n-k)=kn-k^2,

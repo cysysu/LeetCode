@@ -1,0 +1,116 @@
+题目描述
+
+一只青蛙一次可以跳上1级台阶，也可以跳上2级。求该青蛙跳上一个n级的台阶总共有多少种跳法。
+
+代码1(基于树形数据结构):
+#include<stdlib.h>
+#include<iostream>
+#include<fstream>
+#include<stdio.h>
+#include<time.h>
+#include<memory.h>
+#include<math.h>
+#include<windows.h>
+#include<math.h>
+#include<conio.h>
+#include<iomanip>
+#include<string>
+#include<vector>
+#define N 100
+#define M 100
+
+
+using namespace std;
+
+
+
+typedef struct treenode{
+
+	int value;
+	int now;    //the caculate value
+	int level;
+	struct treenode *left;
+	struct treenode *right;
+	struct treenode(int x, int y, int z) :value(x), now(y), level(z), left(NULL), right(NULL){}
+
+}node, *point;
+
+class Solution {
+public:
+	int jumpFloor(int number) {
+		int i, j, level = 0, now = 0, value = 0;
+		if (number == 0)return type;
+		number1 = number;
+		point tou;
+		create_tree(tou, value, now, level);
+		return type;
+	}
+
+	void create_tree(point &head, int value, int now, int level){ //建number层的二叉树
+		head = new node(value, now, level);
+		if (now == number1){
+			type++;
+		}
+		else{
+			if (level < number1){
+				create_tree(head->left, 1, now + 1, level + 1);
+				create_tree(head->right, 2, now + 2, level + 1);
+			}
+		}
+	}
+
+	int number1;
+	int type = 0;
+};
+
+void main(){
+	int number;
+	Solution a;
+	cout<<a.jumpFloor(0)<<endl;
+	system("pause");
+}
+
+解析：（1）因为青蛙一次只能跳1步或2步，所以将青蛙的可能步数建立成二叉树模型
+.
+ 
+（2）结构体中包含的数据分别是：value：当前可跳步数（左结点值为1，右结点值为2）。
+now:从根结点到当前结点的所有跳的台阶总数。
+level:创建数的总层数，如果每次都跳一个台阶
+ 
+（3）如果当前台阶总数和目标阶数相等则依然创建该节点，只是没有左右结点，按此方法创建的树的所有末
+端结点的now值均为目标阶数。
+
+代码2：基于函数递归
+class Solution {
+public:
+	int jumpFloor(int number) {
+		if (number == 0)return 0;
+		if (number == 1)return 1;
+		if (number == 2)return 2;
+		if (number >= 3)return jumpFloor(number - 1) + jumpFloor(number-2);
+	}
+};
+
+解题思想:
+因为每次可以调两格所以在一共有n级台阶的时候有两种跳法f(n)=f(n-1)+f(n-2)分别是每次跳一
+格和两格，那么一次跳两格之后的n-2又有两种跳法f(-2)=f(n-3)+f(n-4)依次递归。
+
+
+代码3：
+class Solution {
+public:
+    int jumpFloor(int number) {
+        int a=1,b=2,c;
+        number--;
+        while(number)
+        {
+            c=b;
+            b=a+b;
+            a=c;
+            number--;
+        }
+        return a;
+    }
+};
+
+解析：利用简单的循环思想，在实间和空间花费都比较少

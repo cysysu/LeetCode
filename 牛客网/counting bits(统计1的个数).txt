@@ -1,0 +1,191 @@
+
+思想1(树的访问，run time 144ms)
+
+class Solution {
+public:
+	vector<int> countBits(int num) {
+		if (num == 0){
+			data.push_back(0);
+			return data;
+		}
+		int level = ceil(log2(num+1));
+		int count1 = 0; //目前栈中1的个数
+		int count2 = 0; //目前栈中元素的个数
+		int	count3 = 0; //输出结点的个数
+		int temp;
+		while (1){
+			while (count2 < level-1){
+				sta.push(0);
+				count2++;
+			}
+			if (count2==level-1){//只有到叶子结点的上一层时才输出
+				data.push_back(count1); //0入栈
+				count3++;
+				if (count3 == num + 1)break;
+				data.push_back(count1 + 1); //1入栈
+				count3++;
+				if (count3 == num + 1)break;
+			}
+			temp = sta.top();
+			while (count2>0&&temp==1){
+				if (count3 == num + 1){
+					cout <<"finished!"<< endl;
+				}
+				sta.pop();
+				count2--;
+				count1--;
+				if(count2>0)temp = sta.top();
+			}
+			if (count2>0&&temp==0){
+				sta.pop();
+				sta.push(1);
+				count1++;
+			}
+		}
+		return data;
+	}
+	stack<int>sta;
+	vector<int>data;
+};
+
+/*算法综述：
+
+在这个算法中我们利用如下的树型结构：
+
+                                          start                 第一层
+                                        /       \               
+                                       /         \
+                                      0           1             第二层
+                                    /   \        / \
+                                   0     1      0   1           第三层
+                                  / \   / \    /\   /\
+                                 0   1 0   1  0  1 0  1         第四层
+
+                      对应的数   0   1 2   3  4  5 6  7
+
+所以利用二叉树的遍历方法就可以求解法。
+
+在树的非递归遍历中，只要一个结点的左子树为空，就停止入栈，并加入到输出队列中，然后转到结点的右子树，执行相同的操作；
+
+但是在本算法中，停止入栈的条件就是栈里的元素达到level-1时(比如说num=7，则最多需要四层的二叉树来表示所有结点)，然后依次输出两个子节点(0和1)。
+
+*/
+
+
+思想3(对每一个数进行位运算，统计1的个数，run time 128ms)
+
+class Solution {
+public:
+	vector<int> countBits(int num) {
+		vector<int> v;
+		int i,count,temp;
+		for (i = 0; i <= num;i++){
+			count = 0;
+			temp = i;
+			while (temp){
+				count++;
+				temp= temp&(temp - 1);
+			}
+			v.push_back(count);
+		}
+		return v;
+	}
+};
+
+
+
+思路3 （动态规划，run time ,164ms）
+
+class Solution {
+public:
+	vector<int> countBits(int num) {
+		vector<int> v;
+		int i, j;
+		v.push_back(0);
+		int *result = new int[num + 1];
+		for (i = 1, j = 0; i <= num; i++){
+			if (i == pow(2, j)){
+				result[i] = 1;
+			}
+			else if (i == pow(2, j + 1)){
+				result[i] = 1;
+				j++;
+			}
+			else{
+				int t = i - pow(2, j);  //只要这个数在[2^j,2^(j+1)-1]就可以根据以前的情况来确定
+				result[i] = 1 + result[t];  //1的个数加1
+			}
+		}
+		for (i = 1; i <= num; i++){
+			v.push_back(result[i]);
+		}
+		delete result;
+		return v;
+	}
+};
+
+例如：
+
+0       0
+1       01
+2       10
+3       11 
+4       100
+5       101
+6       110
+7       111
+8       1000
+9       1001
+10      1010
+11      1011
+12      1100  
+13      1101
+14      1110
+15      1111
+16      10000
+17      10001
+18      10010
+
+动态递归方程为：
+count[i]=1+count[i-pow(2,j)],其中count[i]表示数i的1的个数，其中j是离i最近的2的整数次幂
+
+
+改进版：
+class Solution {
+public:
+	vector<int> countBits(int num) {
+		vector<int> v;
+		int i, j,t;
+		v.push_back(0);
+		int *result = new int[num + 1];
+		result[0] = 0;
+		for (i = 1, j = 0; i <= num; i++){
+			if (i >= pow(2, j)&&pow(2,j+1)>i){
+				t = i - pow(2, j);  //只要这个数在[2^j,2^(j+1)-1]就可以根据以前的情况来确定
+				result[i] = 1 + result[t];  //1的个数加1
+			}
+			else {
+				result[i] = 1;
+				j++;
+			}
+		}
+		for (i = 1; i <= num; i++){
+			v.push_back(result[i]);
+		}
+		delete result;
+		return v;
+	}
+};
+
+
+
+算法思想：
+假设有如下序列：
+十进制：0    1      2     3      4       5         6       7        8         9          10       11        12        13       14        15        16          17         18
+二进制：0    01   10   11   100   101   110   111   1000   1001   1010   1011   1100   1101   1110   1111   10000   10001  10010
+我们可以发现，对于一个数n，
+(1) 如果这个数是2的整数次幂(即2的0,1,2,3,4.......)，则这个数中1的位数为1，否则
+(2)以离n最近的2的整数次幂为界点，则从第一个数开始到该界点可看成是一段，那么n中1的位数等于界点中1的位数加上n在前段的相对位置的数中1的位数之和，
+
+举个栗子
+在上述序列中8可以看做是一个界点，则9中1的位数等于8(离9最近的界点是8，2的3次方)中1的位数加上1中1的位数，同理，17中1的位数等于16(16看成是界点)的1的位数加上1中1的位数，18中1的位数等于16中1的位数加上2中1的位数，如此循环下去.........一直到31中1的位数等于16中1的位数加上15中1的位数，然后32又可以看成是一个界点，这个界点可以递推出33-63中每个数中1的位数，然后64又可以看成是一个界点，可以求出65-127之中每个数中1的位数.........如此循环下去.

@@ -1,0 +1,40 @@
+题目:输入一个链表，从尾到头打印链表每个节点的值。
+代码：
+class Solution {
+public:
+	vector<int> printListFromTailToHead(struct ListNode* head) {
+		int i,count = 0;
+		vector<int>sq;
+		struct ListNode *p = NULL; 
+		struct ListNode *now=NULL, *newhead=NULL;
+		now = head;
+		newhead = NULL;
+
+			while (now != NULL){
+				p = new ListNode(now->val);
+				if (newhead == NULL){  //链表为空
+					newhead = p;
+				}
+				else{   //链表非空，头插法
+					p->next = newhead;
+					newhead = p;
+				}
+				now = now->next;
+				count++;
+			}
+
+			now = newhead;//指针归位
+
+			for (i = 0; i < count; i++){
+				sq.push_back(now->val);
+				now = now->next;
+			}
+			return sq;
+		
+	}
+};
+
+解释：while (now != NULL)循环不必写成while (now->next!= NULL),这样做有以下缺点:
+1、如果链表只有一个元素就会出错.
+
+2、链表最后一个元素无法加入到新链表中.还需要另外的代码处理

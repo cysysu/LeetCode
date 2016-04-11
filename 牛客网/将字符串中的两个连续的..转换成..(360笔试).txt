@@ -1,0 +1,74 @@
+题目要求：
+输入：
+10 3
+.b..bz....
+1 h  //将第一个字符替换成h之后的字符串需要将两个..转换成1个.的转换次数
+3 c
+9 f
+
+输出：
+4
+3
+1
+
+输入：
+4 4
+.cc.
+2 .
+3 .
+2 a
+1 a
+
+
+
+
+
+int main(){
+	int num, row;
+	int index,count,count1;
+	char chr;
+	vector<pair<int, char>>tran;
+	ifstream fin("c:\\users\\dell\\desktop\\cin.txt");
+	string s, temp;
+	fin >> num; //字符的个数
+	fin >> row; //要转换的个数
+	fin >> s;  //待处理的目标字符串
+	for (int i = 0; i < row;i++){ //存放每次改变的具体情况
+		fin >> index;
+		fin >> chr;
+		tran.push_back(make_pair(index-1,chr));
+	}
+	fin.close();
+	for (int i = 0; i<row; i++){
+		count = 0;
+		count1 = 0;
+		s[tran[i].first] = tran[i].second;
+		temp.clear();
+		temp = s;
+		string::iterator iter, last1;
+		iter = temp.begin();
+		last1 = temp.end();
+		while (iter != last1){
+			if (*iter == '.')count++;
+			else {
+				count = 0;
+			}
+			if (count == 2){
+				iter--;
+				temp.erase(iter);
+				count1++;
+				count--;
+				last1 = temp.end();
+			}
+			iter++;
+		}
+		cout << count1 << endl;
+	}
+	return 0;
+}
+ 
+算法思想综述：
+
+1、对没次出现的.进行计数(count++)，一旦count的值为2，则说明有两个连续的..
+
+2、立马将连续两个..的头一个.删除（将两个合并成一个，然后再统计后面有没有连续的.）

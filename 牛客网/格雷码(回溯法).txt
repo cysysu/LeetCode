@@ -1,0 +1,196 @@
+For example, given n = 2, return [0,1,3,2]. Its gray code sequence is:
+00 - 0
+01 - 1
+11 - 3
+10 - 2
+
+
+用一个例子来说明：
+假设产生3位元的格雷码，原始值位 000
+
+第一步：改变最右边的位元值： 001
+第二步：改变右起第一个为1的位元的左边位元： 011
+
+第三步：改变最右边的位元值： 010
+第四步：改变右起第一个为1的位元的左边位元： 110
+
+第五步：改变最右边的位元值： 111
+第六步：改变右起第一个为1的位元的左边位元： 101
+
+第七步：改变最右边的位元值： 100
+
+
+方法1：
+class Solution {
+public:
+
+	void create_gray_code(int n, int now){
+		if (now == n){
+			total.push_back(data);
+			return;
+		}
+		data.push_back(0);
+		create_gray_code(n, now + 1);
+		data.pop_back();
+		data.push_back(1);
+		create_gray_code(n,now+1);
+		data.pop_back();
+	}
+	
+	void convert_to_int(){
+		int size = total.size();
+		data.clear();
+		int sum = 0;
+		int size1 = total[0].size();
+		for (int i = 0; i < size;i++){
+			sum = 0;
+			for (int j =0; j<size1;j++)sum = sum + pow(2,size1-1-j)*total[i][j];
+			data.push_back(sum);
+		}
+	}
+
+	vector<int> grayCode(int n) {
+		if (n == 0)return data;
+		create_gray_code(n,0);
+		convert_to_int();
+		return data;
+	}
+	vector<int>data;
+	vector<vector<int>>total;
+};
+
+
+方法2：
+class Solution {
+public:
+
+	void create_gray_code(int n, int now, vector<int> &num){
+		if (now == n){
+			total.push_back(num);
+			return;
+		}
+		num[now] = 0;
+		create_gray_code(n, now + 1, num);
+		num[now] = 1;
+		create_gray_code(n, now + 1, num);
+	}
+	
+	void convert_to_int(){
+		int size = total.size();
+		data.clear();
+		int sum = 0;
+		int size1 = total[0].size();
+		for (int i = 0; i < size;i++){
+			sum = 0;
+			for (int j =0; j<size1;j++)sum = sum + pow(2,size1-1-j)*total[i][j];
+			data.push_back(sum);
+		}
+	}
+
+	vector<int> grayCode(vector<int> &num) {
+		create_gray_code(num.size(),0,num);//从最后一个位开始
+		convert_to_int();
+		return data;
+	}
+	vector<int>data;
+	vector<vector<int>>total;
+};
+/*算法综述：
+利用递归求回溯问题时，当函数返回时就有回溯到上一层函数的本质，
+*/
+
+第一种生成拓扑图：
+
+
+
+
+
+                                          start
+                                        /       \
+                                       /         \
+                                      /           \
+                                     0             1  
+                                   /   \          / \
+                                  0     1        0   1  
+                                 / \   / \      /\   /\
+                                0   1 0   1    0  1 0  1   
+
+
+改进之后：
+class Solution {
+public:
+	void create_gray_code(int n, int now, vector<int> &num){
+		if (now == n){
+			total.push_back(num);
+			return;
+		}
+		create_gray_code(n, now + 1, num);
+		if(num[now]==0)num[now] = 1;
+		else num[now] = 0;
+		create_gray_code(n, now + 1, num);
+	}
+
+	void convert_to_int(){
+		int size = total.size();
+		data.clear();
+		int sum = 0;
+		int size1 = total[0].size();
+		for (int i = 0; i < size; i++){
+			sum = 0;
+			for (int j = 0; j<size1; j++)sum = sum + pow(2, size1 - 1 - j)*total[i][j];
+			data.push_back(sum);
+		}
+	}
+
+	vector<int> grayCode(int n) {
+		vector<int>num(n,0);
+		create_gray_code(num.size(), 0, num);//从最后一个位开始
+		convert_to_int();
+		return data;
+	}
+	vector<int>data;
+	vector<vector<int>>total;
+};
+改进之后的拓扑图为：
+
+
+第二种生成拓扑图：
+                                          start
+                                        /       \
+                                       /         \
+                                      /           \
+                                     0             1  
+                                   /   \          / \
+                                  0     1        1   0  
+                                 / \   / \      /\   /\
+                                0   1 1   0    0  1 1  0   
+
+
+
+
+
+其他算法：
+class Solution {
+    void utils(bitset<32>& bits, vector<int>& result, int k){
+        if (k==0) {
+            result.push_back(bits.to_ulong());
+        }
+        else {
+            utils(bits, result, k-1);
+            bits.flip(k-1);
+            utils(bits, result, k-1);
+        }
+    }
+public:
+    vector<int> grayCode(int n) {
+        bitset<32> bits;
+        vector<int> result;
+        utils(bits, result, n);
+        return result;
+    }
+};
+/*特殊说明：
+bitset的0位表示低阶位，后面表示高阶位
+bitset<8>tmp(13);存放的是10110000=2^1+2^0+2^2+2^3=13。
+
+*/

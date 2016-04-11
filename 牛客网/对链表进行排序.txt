@@ -1,0 +1,38 @@
+class Solution {
+public:
+	ListNode* insertionSortList(ListNode* head) {
+		if (head==NULL||head->next==NULL)return head;
+		ListNode *head1 = head,*pre=head1->next,*tail=head1,*temp=NULL;//head1假设是新指针
+		while (pre!=NULL){//链表有两个以上元素
+			if (pre->val<tail->val){//为新的头结点
+				if (head1->val>pre->val){
+					tail->next = pre->next;
+					pre->next = head1;
+					head1 = pre;
+					pre = tail->next;
+				}
+				else{//头结点以后的结点
+					for (temp = head1; temp->next != NULL; temp = temp->next){
+						if (pre->val >= temp->val&& temp->next->val >= pre->val)break;
+					}
+					tail->next = pre->next;
+					pre->next = temp->next;
+					temp->next = pre;
+					pre=tail->next;
+				}
+			}//end if
+			else{
+				tail = pre;
+				pre = pre->next;
+			}
+		}//end while
+		return head1;
+	}
+};
+/*算法综述：
+1.该算法利用直接插入法将尾部结点插入到已排序好的序列中，新加入的点只可能有两种情况：
+A、可能为头结点
+B、可能为第一个结点以后的结点
+C、temp->next != NULL的条件可以改为temp != tail，因为此时tail为已排好序结点的最后一个；
+如果是temp->next != NULL则要搜索到全部链表的倒数第三个结点为止(包含第第三个)
+*/

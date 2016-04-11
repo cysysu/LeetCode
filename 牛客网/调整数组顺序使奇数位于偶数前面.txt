@@ -1,0 +1,39 @@
+题目描述
+
+输入一个整数数组，实现一个函数来调整该数组中数字的顺序，使得所有的奇数位于数组的前半部分，所有的偶数位于位于数组的后半部分，并保证奇数和奇数，偶数和偶数之间的相对位置不变。
+
+代码：
+ 
+class Solution {
+public:
+	void reOrderArray(vector<int> &array) {
+		int i, j, temp, mark, counter = 0, flag;
+		if (array.size()>0){
+			for (i = 0; i < array.size() - 1; i++){
+				if (!(array[i] % 2 == 0 && array[i + 1] % 2 != 0)){
+					if (array[i] % 2 != 0 )counter++;
+				
+				}
+				if (array[i] % 2 == 0 && array[i + 1] % 2 != 0){ //前偶后基
+					mark = i + 1;  //mark表示不符合前基后偶数对中后面基数的位置
+					flag = mark;
+					for (j = 0; j < flag - counter; j++){
+						temp = array[mark];
+						array[mark] = array[mark - 1];
+						array[mark - 1] = temp;
+						mark--;
+					}
+					counter++; //表示又调整了一个基数
+				}
+			}
+		}
+	
+	}
+};
+
+
+分析:本题采用调换思想，如果遇到前偶后基的情况就进行调换，每次都要控制调换的次数，确保被调换后的基数
+
+前面是基数，后面是偶数。其中flag表示在这个数之前共有多少个数，counter表示这些数中有多少个基数，flag-counter
+
+表示要交换的次数。

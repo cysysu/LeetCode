@@ -1,0 +1,44 @@
+题目描述
+
+输入一颗二叉树和一个整数，打印出二叉树中结点值的和为输入整数的所有路径。路径定义为从树的根结点开始往下一直到叶结点所经过的结点形成一条路径.
+
+代码1：
+
+
+class Solution {
+public:
+	vector<vector<int> > FindPath(TreeNode* root, int expectNumber) {
+		search(root,expectNumber);
+		return result;
+	}
+
+	void search(TreeNode* root, int expectNumber){
+		if (root != NULL){       //只要这个结点不为空，就入栈
+			tmp.push_back(root->val);
+			if (root->left == NULL&&root->right != NULL){//左结点为空
+				search(root->right, expectNumber - root->val);
+			}
+			else if (root->right == NULL&&root->left != NULL){
+				search(root->left, expectNumber - root->val);
+			}
+			else if (root->right == NULL&&root->left == NULL){//左右结点为空，同时也是最终递归出口
+				if (expectNumber - root->val == 0){
+					
+					result.push_back(tmp);
+				}
+			}
+			else{ //左右孩子都不为空
+				search(root->left, expectNumber - root->val);
+				search(root->right, expectNumber - root->val);
+
+			}
+			tmp.pop_back();//一定要出栈
+		}
+	};
+	vector<int>tmp;
+	vector<vector<int> >result;
+
+};
+
+
+总结:要熟练掌握元素出栈的时机和递归出口的设定。

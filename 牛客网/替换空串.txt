@@ -1,0 +1,30 @@
+请实现一个函数，将一个字符串中的空格替换成“%20”。例如，当字符串为We Are Happy.则经过替换之后的字符串为We%20Are%20Happy。
+
+代码:
+class Solution {
+public:
+	void replaceSpace(char *str, int length) {
+		int i, j, size,count=0;
+		int mark;
+		char *str1;
+		size = strlen(str);
+		cout << size<< endl;
+		str1 = new char[size];
+		for (i = 0; i < size; i++)str1[i] = str[i];
+		mark = 0;  //初始插入点
+		for (i = 0; i < size; i++){
+			if (str1[i] != ' '){
+				str[mark] = str1[i];
+				mark++;
+			}
+			else{
+				str[mark++] = '%';
+				str[mark++] = '2';
+				str[mark++] = '0';
+			}
+		}
+		str[mark] = '\0';
+	}
+};
+
+注解:加上str[mark] = '\0'语句编程通过

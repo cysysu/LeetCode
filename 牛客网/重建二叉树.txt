@@ -1,0 +1,141 @@
+题目:输入某二叉树的前序遍历和中序遍历的结果，请重建出该二叉树。假设输入的前序遍历和中序遍历的结果中都不含重复的数字。
+例如输入前序遍历序列{1,2,4,7,3,5,6,8}和中序遍历序列{4,7,2,1,5,3,8,6}，则重建二叉树并返回。
+
+
+using namespace std;
+
+ struct TreeNode {
+     int val;
+     TreeNode *left;
+     TreeNode *right;
+     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ };
+
+class Solution {
+public:
+	struct TreeNode* reConstructBinaryTree(vector<int> pre, vector<int> in) {
+		int line,i;
+		int begin;
+		int **p;
+		pre_copy = pre;
+		in_copy = in;
+		line = pre.size();
+		//if (pre_copy.size() && in_copy.size()){
+			p=new int*[line];
+			for (i = 0; i < line; i++)p[i] = new int[3];
+		//}
+		
+		if (pre_copy.size()!=0 && in_copy.size()!=0){   //not null
+			for (i = 0; i < line; i++)p[i][0] = pre_copy[i];
+			begin = pre_copy[0];
+			create_tree_table(0,line-1,0,line-1,p);
+			create_tree(p,begin,head);    
+		}
+		if(head!=NULL)return head;
+		else return NULL;
+	}
+
+	void create_tree_table(int begin, int end,int begin1, int end1, int **p){
+		int i, mark,base;
+		int left_element;
+		int right_element;
+		int location;
+		
+			for (i = begin; i <= end; i++){  //find the root of the tree
+				if (in_copy[i] == pre_copy[begin1]){ 
+					mark = i;//根为in_copy[mark]
+					break;
+				}
+			}
+			left_element = mark-begin;
+			right_element = end - mark;
+
+			for (i = 0; i < pre_copy.size(); i++){
+				//cout << p[i][0] << endl;
+				//cout << in_copy[mark]<< endl;
+				if (in_copy[mark] == p[i][0])
+				{
+					location = i;
+					break;
+				}
+			}
+
+			//write left subtree
+			if (left_element == 0)p[location][1]=-1;
+			else{
+				p[location][1] = pre_copy[begin1 +1];
+				create_tree_table(begin, mark - 1, begin1 + 1, begin1 + left_element, p);
+			}	
+
+			//write right subtree
+			if (right_element == 0)p[location][2] = -1;
+			else{
+				p[location][2] = pre_copy[begin1+1+left_element];
+				create_tree_table(mark + 1, end, begin1+1+left_element, end1, p);
+			}
+	}
+
+	void create_tree(int **p,int begin,struct TreeNode *&T){
+		struct TreeNode *pt;
+		int i;
+		int location;
+
+		//for (i = 0; i < pre_copy.size(); i++){
+		//	cout << setw(4) << p[i][0] << setw(4) << p[i][1] << setw(4) << p[i][2] << endl;
+		//}
+
+		for (i = 0; i < pre_copy.size(); i++){
+			//cout << p[i][0] << endl;
+			//cout << in_copy[mark]<< endl;
+			if (begin == p[i][0])
+			{
+				location = i;
+				break;
+			}
+		}
+			pt = new TreeNode(begin);
+			T = pt;
+			if(p[location][1]!=-1)create_tree(p, p[location][1], T->left);
+			else T->left = NULL;
+			if (p[location][2] != -1)create_tree(p, p[location][2], T->right);
+			else T->right = NULL;
+	}
+	vector<int>pre_copy;
+	vector<int>in_copy;
+	struct TreeNode* head = NULL;
+};
+
+void main(){
+
+	int i;
+	int rnd;
+	Solution a;
+	struct TreeNode* head = NULL;
+	vector<int>pre, in;
+	int pre_array[8] = {1,2,4,7,3,5,6,8};
+	int in_array[8] = {4,7,2,1,5,3,8,6};
+	for (i = 0; i < 8; i++){
+		pre.push_back(pre_array[i]);
+		in.push_back(in_array[i]);	
+	}
+	head=a.reConstructBinaryTree(pre,in);
+}
+
+分析总结:
+	在中序容器中，按照先序容器中元素的位置对中序元素进行分割，每次分割的结果是
+
+在中序排列中找到每个子树，然后对照先序找到子树的根结点，然后递归分割。在算法中比较重要
+
+的是求出根结点左右子树结点的数目，如果根结点的某个子树结点数为零，则在树表中将其子树标记记
+
+为-1，如果子树不为零，则修改begin1和end1的值继续查找。其中mark表示根结点在中序排列中的数组标记
+
+则其左右子树下标号分别为（begin, mark - 1）和（mark，end），对应在先序中查找的下标对应为
+
+（begin1 + 1, begin1 + left_element）和（begin1+1+left_element, end1）
+
+实例：
+
+先序：1,(2,4,7),(3,5,6,8)
+中序：(4,7,2),1,(5,3,6,8)
+下标：0,1,2,3,4,5,6,7

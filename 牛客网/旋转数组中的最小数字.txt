@@ -1,0 +1,48 @@
+题目:
+把一个数组最开始的若干个元素搬到数组的末尾，我们称之为数组的旋转。
+输入一个非递减序列的一个旋转，输出旋转数组的最小元素。例如数组
+{3,4,5,1,2}为{1,2,3,4,5}的一个旋转，该数组的最小值为1。
+
+代码:
+class Solution {
+public:
+	int minNumberInRotateArray(vector<int> rotateArray) {
+		int number = rotateArray.size();
+		int i, j, low, mid, high;
+		if (number == 0)return 0;
+		low = 0;
+		high = number - 1;
+		mid = (high + low) / 2;
+		if (rotateArray[low] < rotateArray[high])return rotateArray[low];
+		else{
+			if (rotateArray[low] != rotateArray[high]){
+				while (1){
+					if (rotateArray[high] >= rotateArray[mid])high = mid;
+					if (rotateArray[low] <= rotateArray[mid])low = mid;
+					mid = (high + low) / 2;
+					if (high - low <= 1)return rotateArray[high];
+				}
+			}
+
+			else  {
+				while (high - low > 1){
+					if (rotateArray[high] >= rotateArray[high - 1])high--;
+					if (rotateArray[low + 1] >= rotateArray[low])low++;
+				}
+				return rotateArray[high] > rotateArray[low] ? rotateArray[low] : rotateArray[high];
+			}
+		}
+	}
+};
+
+special cases:
+(a)2,2,2,2,2,1,2
+(b)1,2,2,2,2,2,2
+
+解析：(1)题目中所提及的若干个，最小值从0开始，可能是1，可能是2,........
+
+(2)按非递减排列，包含两个元素相等的情况，special case(a)就是这种情况
+
+(3)将二插查找的思想引进，是一个比较好的创新，只不过在更新low和high的条件上有所
+
+不同。

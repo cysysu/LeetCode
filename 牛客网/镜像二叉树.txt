@@ -1,0 +1,54 @@
+题目:操作给定的二叉树，将其变换为源二叉树的镜像。 
+
+代码(我的):
+
+class Solution {
+public:
+	void Mirror(TreeNode *pRoot) {
+		if (pRoot != NULL){
+			if (pRoot->left == NULL&&pRoot->right != NULL){
+				tmp = pRoot->right;
+				pRoot->right = NULL;
+				pRoot->left = tmp;
+				Mirror(pRoot->left);
+			}
+			else if (pRoot->right == NULL&&pRoot->left != NULL){
+				tmp = pRoot->left;
+				pRoot->left = NULL;
+				pRoot->right = tmp;
+				Mirror(pRoot->right);
+
+			}
+			else if (pRoot->right == NULL&&pRoot->left == NULL){
+			/*递归出口*/
+			}
+			else{
+				tmp = pRoot->left;
+				pRoot->left = pRoot->right;
+				pRoot->right = tmp;
+				Mirror(pRoot->left);
+				Mirror(pRoot->right);
+			}
+		}
+	}
+	TreeNode *tmp = NULL;
+};
+
+
+参考代码:
+class Solution {
+public:
+    void Mirror(TreeNode *pRoot) {
+        //利用递归调用
+     if (pRoot==NULL) return;
+        TreeNode* temp;
+       temp = pRoot->left;
+        pRoot->left = pRoot->right;
+        pRoot->right = temp;
+        Mirror(pRoot->left);
+        Mirror(pRoot->right);
+        return;
+    }
+};
+
+差异:首先判断每个结点是否为空，确保代码的简洁性。递归一定要有出口。
